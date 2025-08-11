@@ -1,28 +1,28 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "./users.service";
-import { PrismaService } from "src/prisma/prisma.service";
-import { NotFoundException } from "@nestjs/common";
-
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserService } from './users.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { NotFoundException } from '@nestjs/common';
 
 // Mock do PrismaService
 // Aqui estamos criando um mock do PrismaService para simular as operações de banco de dados
 const mockPrisma = {
-    user: {
-        create: jest.fn(),
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-    }
-}
+  user: {
+    create: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+};
 
 // Testes para o UsersService
 // Aqui estamos criando uma suite de testes para o UsersService, que é responsável por gerenciar usuários
 // Usamos o Jest para criar mocks e verificar se as funções estão sendo chamadas corretamente
-describe("UsersService", () => {
-  let service: UserService;
+describe('Suit de testes para serviços de usuáios', () => {
+  let service: UserService; 
 
-  // Antes de cada teste, criamos uma instância do UsersService com o PrismaService mockado
+  //Antes de cada teste, criamos uma instância do UserService com
+  // o PrimsaService mockado
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -31,19 +31,31 @@ describe("UsersService", () => {
       ],
     }).compile();
 
-    service = module.get<UserService>(UserService);
+    service = module.get<UserService>(UserService)
+    
+
   });
 
-  // Testes individuais
-  // Aqui definimos os testes individuais para cada funcionalidade do UsersService
-  it("deve criar um usuário", async () => {
-    const dto = { name: "Jonas", email: "jonas@example.com", password: "123" };
-    mockPrisma.user.create.mockResolvedValue(dto);
+  // Testes Individuais------------------------
 
-    const result = await service.create(dto as any);
-    expect(result).toEqual(dto);
-    expect(mockPrisma.user.create).toHaveBeenCalledWith({ data: dto });
+  //01. Teste do método UserService.create
+  it('deve criar um usuário', async () => {
+    const userDataDto = {
+      name: 'Jonas',
+      email: 'jonas@gmail.com',
+    };
+
+    mockPrisma.user.create.mockResolvedValue(userDataDto)
+
+    const result = await service.create(userDataDto as any)
+
+    expect(result).toEqual(userDataDto)
+    expect(mockPrisma.user.create).toHaveBeenCalledWith({data: userDataDto})
+
   });
+
+  //02. Teste para o método UserService. findAll
+
 });
 
 // Executar os  testes: npm test
