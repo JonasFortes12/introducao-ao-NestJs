@@ -54,7 +54,22 @@ describe('Suit de testes para serviços de usuáios', () => {
 
   });
 
-  //02. Teste para o método UserService. findAll
+  //02. Teste para o método UserService.findAll
+  it("deve listar todos os usuários", async () => {
+    const users = [
+      {id: 1, name: "Jonas", email: "jonas@gmail.com"},
+      {id: 2, name: "willian", email: "wilian@gmail.com"},
+      {id: 3, name: "felipe", email: "felipe@gmail.com"}
+    ]
+
+    mockPrisma.user.findMany.mockResolvedValue(users)
+
+    const result = await service.findAll()
+  
+    expect(result).toEqual(users)
+
+  })
+  
 
 });
 
