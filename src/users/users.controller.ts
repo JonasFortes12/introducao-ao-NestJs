@@ -3,7 +3,7 @@ import { UserService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { ApiOperation, ApiBody, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { JwtAuthGuard } from 'src/auth/jwt.guard'
+import { JwtAuthGuard } from '../auth/jwt.guard'
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
