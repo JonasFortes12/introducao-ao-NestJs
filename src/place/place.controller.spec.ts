@@ -3,7 +3,7 @@ import { PlaceController } from './place.controller';
 import { PlaceService } from './place.service';
 import { CloudinaryService } from './cloudinary.service';
 import { Place, placeType } from '@prisma/client';
-
+import { buffer } from 'stream/consumers';
 
 describe('PlaceController testes', () => {
   let controller: PlaceController;
@@ -41,25 +41,59 @@ describe('PlaceController testes', () => {
   it('deve listar todos os locais', async () => {
     const places: Place[] = [
       {
-        id: "1",
+        id: '1',
         name: 'Bar Tunico',
         type: placeType.BAR,
         phone: '899223',
         latitude: 23.6,
         longitude: 23.5,
         images: [],
-        created_at: new Date()
+        created_at: new Date(),
       },
     ];
 
     placeService.findAll.mockResolvedValue(places);
 
     expect(await controller.findAll()).toEqual(places);
-
-
-
   });
 
   // "Deve listar locais paginados"
   //...
+
+  // Deve criar um local (place)
+  it('deve criar um local com imagens', async () => {
+    const dto = {
+      name: 'Praça',
+      type: placeType.HOTEL,
+      phone: '9023452',
+      latitude: 28,
+      longitude: 27,
+    };
+
+    const files = { images: [{ buffer: Buffer.from('img') }] } as any;
+
+    cloudinaryService.uploadImage.mockResolvedValue({
+      url: 'hhtps://',
+      public_id: 'id_from_cloudinary',
+    });
+
+    placeService.create.mockResolvedValue({
+      id: '1',
+      images: [{ url: 'hhtps://', public_id: 'id_from_cloudinary' }],
+      created_at: new Date(),
+      ...dto,
+    });
+
+    const result = await controller.createPlace(dto as any, files);
+
+    expect(cloudinaryService.uploadImage).toHaveBeenCalled();
+    expect(placeService.create).toHaveBeenCalled();
+    expect(result.id).toBe("1")
+
+
+  });
+
+
+
+
 });
