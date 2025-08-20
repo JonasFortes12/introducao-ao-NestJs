@@ -4,6 +4,7 @@ import { PlaceService } from './place.service';
 import { CloudinaryService } from './cloudinary.service';
 import { Place, placeType } from '@prisma/client';
 import { buffer } from 'stream/consumers';
+import { BadRequestException } from '@nestjs/common';
 
 describe('PlaceController testes', () => {
   let controller: PlaceController;
@@ -58,7 +59,39 @@ describe('PlaceController testes', () => {
   });
 
   // "Deve listar locais paginados"
-  //...
+  it('deve listar locais paginados', async () => {
+    
+    const paginatedPlaces = [
+      {
+        id: '1',
+        name: 'Bar Tunico',
+        type: placeType.BAR,
+        phone: '899223',
+        latitude: 23.6,
+        longitude: 23.5,
+        images: [],
+        created_at: new Date(),
+      },
+    ];
+
+    const dto = { limit: 10, page: 12 };
+
+    const paginated = {
+      data: paginatedPlaces,
+      meta: {
+        total: 120, 
+        page: 12,
+        lastPage: 12
+      }
+    };
+
+    placeService.findPaginated.mockResolvedValue(paginated)
+
+    const result = await controller.findPaginated(dto.page, dto.limit)
+
+    expect(result).toEqual(paginated)
+
+  });
 
   // Deve criar um local (place)
   it('deve criar um local com imagens', async () => {
@@ -88,12 +121,25 @@ describe('PlaceController testes', () => {
 
     expect(cloudinaryService.uploadImage).toHaveBeenCalled();
     expect(placeService.create).toHaveBeenCalled();
-    expect(result.id).toBe("1")
-
-
+    expect(result.id).toBe('1');
   });
 
+  // Deve lançar erro ao criar place sem imagens
+  // dica .reject.toThrow()
 
+  it('deve lançar erro ao criar place sem imagem', async () => {
+    const dto = {
+      name: 'Praça',
+      type: placeType.HOTEL,
+      phone: '9023452',
+      latitude: 28,
+      longitude: 27,
+    };
 
+    const files = { images: [] } as any;
 
+    await expect(controller.createPlace(dto, files)).rejects.toThrow(
+      BadRequestException,
+    );
+  });
 });
